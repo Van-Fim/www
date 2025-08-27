@@ -22,15 +22,25 @@ function isProductAvailableOnStore($productId, $storeId)
 AddEventHandler('sale', 'OnBeforeBasketAdd', 'ddOnBeforeBasketAdd');
 function ddOnBeforeBasketAdd(&$aFields)
 {
-    if (!CModule::IncludeModule("sotbit.multibasket") || 
-        !CModule::IncludeModule("catalog") || 
-        !CModule::IncludeModule("iblock")) {
+    if (
+        !CModule::IncludeModule("sotbit.multibasket") ||
+        !CModule::IncludeModule("catalog") ||
+        !CModule::IncludeModule("iblock")
+    ) {
         return true;
     }
-    
+    // $CURRENT_ID = \Sotbit\Multibasket\Multibasket::getCurrentBasket();
     $CURRENT_ID = 2;
     $is_current_exist = isProductAvailableOnStore($aFields['PRODUCT_ID'], intval($CURRENT_ID));
-    $is_standart_exist = isProductAvailableOnStore($aFields['PRODUCT_ID'], intval($aFields['PROPS'][3]['VALUE']));
+    $prop = array('VALUE' => 0);
+    if (is_array($aFields['PROPS'])) {
+        for ($i = 0; $i < count($aFields['PROPS']); $i++) {
+            if ($aFields['PROPS'][$i]['CODE'] == 'SKLAD') {
+                $prop = $aFields['PROPS'][$i];
+            }
+        }
+    }
+    $is_standart_exist = isProductAvailableOnStore($aFields['PRODUCT_ID'], intval($prop['VALUE']));
 
     if ($is_current_exist == 0 && $is_standart_exist == 0) {
         global $APPLICATION;
