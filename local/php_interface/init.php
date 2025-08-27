@@ -27,10 +27,10 @@ function ddOnBeforeBasketAdd(&$aFields)
         !CModule::IncludeModule("iblock")) {
         return true;
     }
-    //$CURRENT_ID = \Sotbit\Multibasket\Multibasket::getCurrentBasket();
+    
     $CURRENT_ID = 2;
     $is_current_exist = isProductAvailableOnStore($aFields['PRODUCT_ID'], intval($CURRENT_ID));
-    $is_standart_exist = isProductAvailableOnStore($aFields['PRODUCT_ID'], intval($aFields['PROPS']['SKLAD']['VALUE']));
+    $is_standart_exist = isProductAvailableOnStore($aFields['PRODUCT_ID'], intval($aFields['PROPS'][3]['VALUE']));
 
     if ($is_current_exist == 0 && $is_standart_exist == 0) {
         global $APPLICATION;
