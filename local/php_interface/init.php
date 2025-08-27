@@ -1,7 +1,8 @@
 <?
 use Bitrix\Catalog\StoreProductTable;
 
-function isProductAvailableOnStore($productId, $storeId) {
+function isProductAvailableOnStore($productId, $storeId)
+{
     $storeProduct = StoreProductTable::getList([
         'filter' => [
             '=PRODUCT_ID' => $productId,
@@ -21,9 +22,19 @@ function isProductAvailableOnStore($productId, $storeId) {
 AddEventHandler('sale', 'OnBeforeBasketAdd', 'ddOnBeforeBasketAdd');
 function ddOnBeforeBasketAdd(&$aFields)
 {
-    $av = isProductAvailableOnStore($aFields['PRODUCT_ID'], intval($aFields['PROPS']['SKLAD']['VALUE']));
-    file_put_contents(
-        $_SERVER["DOCUMENT_ROOT"] . "/basket_debug.log",
-        print_r(array($av, $aFields['PROPS']['SKLAD']['VALUE']), true)
-    );
+    if (!CModule::IncludeModule("sotbit.multibasket") || 
+        !CModule::IncludeModule("catalog") || 
+        !CModule::IncludeModule("iblock")) {
+        return true;
+    }
+    
+    $CURRENT_ID = 2;
+    $is_current_exist = isProductAvailableOnStore($aFields['PRODUCT_ID'], intval($CURRENT_ID));
+    $is_standart_exist = isProductAvailableOnStore($aFields['PRODUCT_ID'], intval($aFields['PROPS']['SKLAD']['VALUE']));
+
+    if ($is_current_exist == 0 && $is_standart_exist == 0) {
+        global $APPLICATION;
+        $APPLICATION->ThrowException("Товара нет на складе!");
+        return false;
+    }
 }
