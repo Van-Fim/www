@@ -2,7 +2,8 @@
 define("HIDE_SIDEBAR", true);
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
 $APPLICATION->SetTitle("Корзина");
-?><?$APPLICATION->IncludeComponent(
+?>
+<?$APPLICATION->IncludeComponent(
 	"bitrix:sale.basket.basket", 
 	"multibasket", 
 	[
